@@ -4,7 +4,12 @@
     <section>
       <div class="container">
         <div class="row">
-          <div class="col-4 mb-3" v-for="card in cards" :key="card.name">
+          <div
+            class="col-4 mb-3"
+            v-for="card in cards"
+            :key="card.name"
+            :class="{ invisible: !card.visable }"
+          >
             <div class="cards__item" @click="changeCard(card.id)">
               <img
                 :src="
@@ -33,61 +38,73 @@ export default {
           id: 1,
           name: 'apple',
           show: false,
+          visable: true,
         },
         {
           id: 2,
           name: 'fig',
           show: false,
+          visable: true,
         },
         {
           id: 3,
           name: 'grape',
           show: false,
+          visable: true,
         },
         {
           id: 4,
           name: 'kiwi',
           show: false,
+          visable: true,
         },
         {
           id: 5,
           name: 'lemon',
           show: false,
+          visable: true,
         },
         {
           id: 6,
           name: 'melon',
           show: false,
+          visable: true,
         },
         {
           id: 11,
           name: 'apple',
           show: false,
+          visable: true,
         },
         {
           id: 12,
           name: 'fig',
           show: false,
+          visable: true,
         },
         {
           id: 13,
           name: 'grape',
           show: false,
+          visable: true,
         },
         {
           id: 14,
           name: 'kiwi',
           show: false,
+          visable: true,
         },
         {
           id: 15,
           name: 'lemon',
           show: false,
+          visable: true,
         },
         {
           id: 16,
           name: 'melon',
           show: false,
+          visable: true,
         },
       ],
     };
@@ -113,8 +130,19 @@ export default {
       this.holdId = id;
     },
     checkCompare(previd, id) {
+      console.log('delete', previd, id);
       if (previd === id + 10 || previd + 10 === id) {
-        setTimeout(() => console.log('Delete'), 500);
+        setTimeout(
+          () => {
+            this.cards = this.cards.map((card) =>
+              previd === card.id || id === card.id
+                ? { ...card, visable: false }
+                : card
+            );
+          },
+
+          500
+        );
       }
     },
   },
