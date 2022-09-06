@@ -1,7 +1,6 @@
 <template>
   <section class="cards">
-    <h2 class="text-center">Card Game</h2>
-    <section>
+    <section v-if="lenghtOfdata > 12">
       <div class="container">
         <div class="row">
           <div
@@ -25,6 +24,10 @@
         </div>
       </div>
     </section>
+
+    <section v-else class="cards__win">
+      <h2>Congratulations You Win !!!!!!!!!!!!!!!!!!!!!</h2>
+    </section>
   </section>
 </template>
 <script>
@@ -33,6 +36,7 @@ export default {
     return {
       counter: 0,
       holdId: 100,
+      lenghtOfdata: 12,
       cards: [
         {
           id: 1,
@@ -109,29 +113,26 @@ export default {
       ],
     };
   },
+  computed: {},
   methods: {
     changeCard(id) {
-      console.log(id);
-      this.checkCompare(this.holdId, id);
-      this.counter++;
-
-      this.cards = this.cards.map((card) =>
-        card.id === id ? { ...card, show: !card.show } : card
-      );
-
-      console.log('counter : ', this.counter);
-      if (this.counter % 2 === 0) {
-        setTimeout(() => {
-          this.cards = this.cards.map((card) =>
-            card.id === id ? { ...card, show: false } : card
-          );
-        }, 2000);
+      if (this.counter != 0) {
+        this.checkCompare(this.holdId, id);
       }
+      this.cards = this.cards.map((card) =>
+        card.id === id ? { ...card, show: true } : card
+      );
+      console.log('counter : ', this.counter);
+      this.counter++;
+      console.log('res length of cards', this.lenghtOfdata);
+      console.log();
       this.holdId = id;
     },
     checkCompare(previd, id) {
-      console.log('delete', previd, id);
+      //delete matching cards
       if (previd === id + 10 || previd + 10 === id) {
+        this.lenghtOfdata -= 2;
+        console.log('Match');
         setTimeout(
           () => {
             this.cards = this.cards.map((card) =>
@@ -141,9 +142,23 @@ export default {
             );
           },
 
-          500
+          300
+        );
+      } else {
+        setTimeout(
+          () => {
+            this.cards = this.cards.map((card) =>
+              previd !== card.id || id !== card.id
+                ? { ...card, show: false }
+                : card
+            );
+          },
+
+          1200
         );
       }
+
+      console.log('Not Match');
     },
   },
 };
@@ -151,7 +166,6 @@ export default {
 
 <style scoped>
 .cards {
-  background-color: cadetblue;
   padding-block: 110px;
 }
 .cards .container {
@@ -163,5 +177,37 @@ export default {
 .cards__item img {
   height: 150px;
 }
+
+.cards__win {
+  height: 100vh;
+}
+.cards__win h2 {
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 3.125rem;
+  text-align: center;
+  border: 2px dashed #fff;
+  width: 50%;
+  height: 50%;
+}
+
+/*
+.cards__win {
+  width: 100vh;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: black;
+  color: #fff;
+  z-index: 2000;
+  font-size: 25px;
+}
+
+*/
 </style>
->

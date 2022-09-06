@@ -1,4 +1,5 @@
 <template>
+  <h2 class="py-5 heading text-center">Memory Game</h2>
   <Cards></Cards>
 </template>
 
@@ -15,7 +16,11 @@ export default {
 };
 </script>
 
-<style>
+<style class="scoped">
+.heading {
+  font-size: 40px;
+  color: #fff;
+}
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
 html {
@@ -24,5 +29,6 @@ html {
 
 body {
   margin: 0;
+  background-color: cadetblue;
 }
 </style>
