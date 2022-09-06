@@ -1,6 +1,6 @@
 <template>
-  <section class="cards">
-    <section v-if="lenghtOfdata > 12">
+  <div class="cards">
+    <section v-if="lenghtOfdata > 10">
       <div class="container">
         <div class="row">
           <div
@@ -9,7 +9,7 @@
             :key="card.name"
             :class="{ invisible: !card.visable }"
           >
-            <div class="cards__item" @click="changeCard(card.id)">
+            <div class="cards__item" @click="changeCard(card)">
               <img
                 :src="
                   require(`./../../assets/images/${
@@ -26,16 +26,18 @@
     </section>
 
     <section v-else class="cards__win">
-      <h2>Congratulations You Win !!!!!!!!!!!!!!!!!!!!!</h2>
+      <div>
+        <h2>Congratulations You Win !!!!!!!!!!!!!!!!!!!!!</h2>
+        <button @click="rePlay" class="btn btn-primary">restart A game</button>
+      </div>
     </section>
-  </section>
+  </div>
 </template>
 <script>
 export default {
   data() {
     return {
-      counter: 0,
-      holdId: 100,
+      viewedCard: null,
       lenghtOfdata: 12,
       cards: [
         {
@@ -115,51 +117,141 @@ export default {
   },
   computed: {},
   methods: {
-    changeCard(id) {
-      if (this.counter != 0) {
-        this.checkCompare(this.holdId, id);
-      }
+    changeCard(selectedCard) {
       this.cards = this.cards.map((card) =>
-        card.id === id ? { ...card, show: true } : card
+        card.id === selectedCard.id ? { ...card, show: true } : card
       );
-      console.log('counter : ', this.counter);
-      this.counter++;
-      console.log('res length of cards', this.lenghtOfdata);
-      console.log();
-      this.holdId = id;
-    },
-    checkCompare(previd, id) {
-      //delete matching cards
-      if (previd === id + 10 || previd + 10 === id) {
-        this.lenghtOfdata -= 2;
-        console.log('Match');
-        setTimeout(
-          () => {
-            this.cards = this.cards.map((card) =>
-              previd === card.id || id === card.id
-                ? { ...card, visable: false }
-                : card
-            );
-          },
 
-          300
-        );
+      if (this.viewedCard) {
+        this.checkCompare(selectedCard);
       } else {
-        setTimeout(
-          () => {
-            this.cards = this.cards.map((card) =>
-              previd !== card.id || id !== card.id
-                ? { ...card, show: false }
-                : card
-            );
-          },
+        this.viewedCard = selectedCard;
+      }
+    },
+    checkCompare(selectedCard) {
+      //delete matching cards
+      if (selectedCard.name === this.viewedCard.name) {
+        this.lenghtOfdata -= 2;
 
-          1200
-        );
+        setTimeout(() => {
+          this.cards = this.cards.map((card) =>
+            selectedCard.id === card.id || this.viewedCard.id === card.id
+              ? { ...card, visable: false }
+              : card
+          );
+          this.viewedCard = null;
+        }, 300);
+      } else {
+        setTimeout(() => {
+          this.cards = this.cards.map((card) =>
+            selectedCard.id !== card.id || this.viewedCard.id !== card.id
+              ? { ...card, show: false }
+              : card
+          );
+          this.viewedCard = null;
+        }, 500);
+      }
+    },
+    shuffle(array) {
+      let currentIndex = array.length,
+        randomIndex;
+
+      // While there remain elements to shuffle.
+      while (currentIndex != 0) {
+        // Pick a remaining element.
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        // And swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+          array[randomIndex],
+          array[currentIndex],
+        ];
       }
 
-      console.log('Not Match');
+      return array;
     },
+    rePlay() {
+      this.cards = [
+        {
+          id: 1,
+          name: 'apple',
+          show: false,
+          visable: true,
+        },
+        {
+          id: 2,
+          name: 'fig',
+          show: false,
+          visable: true,
+        },
+        {
+          id: 3,
+          name: 'grape',
+          show: false,
+          visable: true,
+        },
+        {
+          id: 4,
+          name: 'kiwi',
+          show: false,
+          visable: true,
+        },
+        {
+          id: 5,
+          name: 'lemon',
+          show: false,
+          visable: true,
+        },
+        {
+          id: 6,
+          name: 'melon',
+          show: false,
+          visable: true,
+        },
+        {
+          id: 11,
+          name: 'apple',
+          show: false,
+          visable: true,
+        },
+        {
+          id: 12,
+          name: 'fig',
+          show: false,
+          visable: true,
+        },
+        {
+          id: 13,
+          name: 'grape',
+          show: false,
+          visable: true,
+        },
+        {
+          id: 14,
+          name: 'kiwi',
+          show: false,
+          visable: true,
+        },
+        {
+          id: 15,
+          name: 'lemon',
+          show: false,
+          visable: true,
+        },
+        {
+          id: 16,
+          name: 'melon',
+          show: false,
+          visable: true,
+        },
+      ];
+      this.shuffle(this.cards);
+      this.lenghtOfdata = 12;
+    },
+  },
+  created() {
+    this.shuffle(this.cards);
   },
 };
 </script>
@@ -167,6 +259,10 @@ export default {
 <style scoped>
 .cards {
   padding-block: 110px;
+}
+
+.cards img {
+  width: 15rem;
 }
 .cards .container {
   max-width: 900px;
