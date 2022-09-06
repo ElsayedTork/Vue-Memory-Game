@@ -1,7 +1,24 @@
 <template>
   <div class="cards">
-    <section v-if="lenghtOfdata > 10">
-      <div class="container">
+    <section class="text-white container my-2">
+      <div
+        class="d-flex cards__upper justify-content-between align-items-center"
+      >
+        <div>
+          <b>Time : {{ timerCount }} second</b>
+        </div>
+        <div>
+          <button @click="rePlay" class="btn btn-primary">
+            restart A game
+          </button>
+        </div>
+      </div>
+    </section>
+    <section
+      v-if="timerCount > 0 && lenghtOfdata > 0"
+      class="cards__items container"
+    >
+      <div class="cards__items__container">
         <div class="row">
           <div
             class="col-4 mb-3"
@@ -9,7 +26,7 @@
             :key="card.name"
             :class="{ invisible: !card.visable }"
           >
-            <div class="cards__item" @click="changeCard(card)">
+            <div class="cards__items__container__item" @click="clickCard(card)">
               <img
                 :src="
                   require(`./../../assets/images/${
@@ -25,10 +42,14 @@
       </div>
     </section>
 
-    <section v-else class="cards__win">
+    <section v-else-if="lenghtOfdata < 0 && timerCount > 0">
       <div>
         <h2>Congratulations You Win !!!!!!!!!!!!!!!!!!!!!</h2>
-        <button @click="rePlay" class="btn btn-primary">restart A game</button>
+      </div>
+    </section>
+    <section v-else class="cards__win">
+      <div>
+        <h2>Game Over You Lose !!!!!!!!!!!!!!!!!!!!!</h2>
       </div>
     </section>
   </div>
@@ -37,6 +58,7 @@
 export default {
   data() {
     return {
+      timerCount: 30,
       viewedCard: null,
       lenghtOfdata: 12,
       cards: [
@@ -117,22 +139,19 @@ export default {
   },
   computed: {},
   methods: {
-    changeCard(selectedCard) {
+    clickCard(selectedCard) {
+      this.flipCard(selectedCard);
+      if (this.viewedCard) this.checkCompare(selectedCard);
+      else this.viewedCard = selectedCard;
+    },
+    flipCard(selectedCard) {
       this.cards = this.cards.map((card) =>
         card.id === selectedCard.id ? { ...card, show: true } : card
       );
-
-      if (this.viewedCard) {
-        this.checkCompare(selectedCard);
-      } else {
-        this.viewedCard = selectedCard;
-      }
     },
     checkCompare(selectedCard) {
-      //delete matching cards
       if (selectedCard.name === this.viewedCard.name) {
         this.lenghtOfdata -= 2;
-
         setTimeout(() => {
           this.cards = this.cards.map((card) =>
             selectedCard.id === card.id || this.viewedCard.id === card.id
@@ -155,20 +174,14 @@ export default {
     shuffle(array) {
       let currentIndex = array.length,
         randomIndex;
-
-      // While there remain elements to shuffle.
       while (currentIndex != 0) {
-        // Pick a remaining element.
         randomIndex = Math.floor(Math.random() * currentIndex);
         currentIndex--;
-
-        // And swap it with the current element.
         [array[currentIndex], array[randomIndex]] = [
           array[randomIndex],
           array[currentIndex],
         ];
       }
-
       return array;
     },
     rePlay() {
@@ -248,6 +261,19 @@ export default {
       ];
       this.shuffle(this.cards);
       this.lenghtOfdata = 12;
+      this.timerCount = 30;
+    },
+  },
+  watch: {
+    timerCount: {
+      handler(value) {
+        if (value > 0) {
+          setTimeout(() => {
+            this.timerCount--;
+          }, 1000);
+        }
+      },
+      immediate: true,
     },
   },
   created() {
@@ -256,54 +282,46 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .cards {
   padding-block: 110px;
-}
+  &__upper {
+    max-width: 900px;
+    margin: 0 auto;
+    button {
+      text-transform: capitalize;
+    }
+  }
+  &__items {
+    position: relative;
 
-.cards img {
-  width: 15rem;
-}
-.cards .container {
-  max-width: 900px;
-}
-.cards__item {
-  position: relative;
-}
-.cards__item img {
-  height: 150px;
-}
+    &__container {
+      max-width: 900px;
+      margin: 0 auto;
 
-.cards__win {
-  height: 100vh;
+      &__item {
+        img {
+          width: 100%;
+          height: 150px;
+        }
+      }
+    }
+  }
+  &__win {
+    height: 100vh;
+    div {
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 3.125rem;
+      text-align: center;
+      border: 2px dashed #fff;
+      width: 50%;
+      height: 50%;
+      flex-direction: column;
+    }
+  }
 }
-.cards__win h2 {
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 3.125rem;
-  text-align: center;
-  border: 2px dashed #fff;
-  width: 50%;
-  height: 50%;
-}
-
-/*
-.cards__win {
-  width: 100vh;
-  height: 100vh;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: black;
-  color: #fff;
-  z-index: 2000;
-  font-size: 25px;
-}
-
-*/
 </style>
